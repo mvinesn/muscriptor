@@ -72,6 +72,29 @@ This gives you the same UI as hosted on https://muscriptor.kyutai.org/, just wit
 The sheet music download needs **MuseScore 4 or newer** installed separately (see
 [Sheet music](#sheet-music) below). Without it, everything except that download still works.
 
+## Docker deployment
+
+Build the app image from this repository:
+
+```bash
+./build-docker-image.sh
+```
+
+The default tag is `muscriptor:local`; override it with `MUSCRIPTOR_IMAGE`.
+Additional arguments are passed to `docker build`, for example
+`./build-docker-image.sh --pull`.
+
+The image serves the UI and API on port 8000 and includes MuseScore and
+FluidSynth. Model weights and soundfonts download at runtime, rather than
+being baked into the image. Mount `/root/.cache` to persist Hugging Face,
+Torch (beat detection), and direct-download caches across container updates.
+Pass `HF_TOKEN` from an account that has accepted the selected model license.
+
+Deployment is managed separately in the sibling `nginx-config` project using
+`muscriptor.compose.yml`; see its README for configuration and startup.
+That stack publishes nginx on port 8080 by default and keeps the app port
+inside Docker. NVIDIA support is enabled by its optional GPU Compose file.
+
 ## Command-line interface (CLI)
 
 ```bash

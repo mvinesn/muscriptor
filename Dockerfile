@@ -58,18 +58,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     uv sync --no-install-project
 
-# Pre-fetch the soundfonts (253 MB: .sf2 for /auralize, .sf3 for the web UI)
-# into the HF hub cache so a fresh container doesn't download them on first
-# use. Runs off just the two files it needs, before the full source COPY,
-# so day-to-day code changes don't re-trigger the download.
-COPY muscriptor/soundfonts.py muscriptor/utils/download.py /tmp/prewarm/
-RUN /app/.venv/bin/python -c "\
-import sys; sys.path.insert(0, '/tmp/prewarm'); \
-import soundfonts, download; \
-download.download_if_necessary(soundfonts.SF2_URL); \
-download.download_if_necessary(soundfonts.SF3_URL)" \
-    && rm -rf /tmp/prewarm
-
+# Models and soundfonts download on first use into the mounted runtime cache.
 COPY pyproject.toml uv.lock README.md ./
 COPY muscriptor/ ./muscriptor/
 RUN --mount=type=cache,target=/root/.cache/uv \
@@ -79,4 +68,4 @@ COPY --from=web-builder /muscriptor/web_dist ./muscriptor/web_dist
 
 
 EXPOSE 8000
-ENTRYPOINT ["uv", "run", "muscriptor", "serve", "--host", "0.0.0.0"]
+ENTRYPOINT ["uv", "run", "muscriptor", "serve", "--host", "0.0.0.0", "--port", "8000"]
