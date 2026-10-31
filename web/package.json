@@ -6,7 +6,6 @@
   "packageManager": "pnpm@10.20.0",
   "scripts": {
     "dev": "vite",
-    "dev:proxy": "BACKEND_URL=https://muscriptor.kyutai.org vite",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview"
   },
