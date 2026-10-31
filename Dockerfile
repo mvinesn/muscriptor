@@ -22,7 +22,8 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS runtime
 
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
-    UV_FROZEN=1
+    UV_FROZEN=1 \
+    TORCH_FORCE_WEIGHTS_ONLY_LOAD=1
 
 WORKDIR /app
 
